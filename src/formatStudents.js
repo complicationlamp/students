@@ -9,10 +9,11 @@ class FormatStudents extends Component {
     this.state = {
 			students: [],
 			filteredStudents:[],
-			open:false,
+			idToAddTagTo:0,
 		}
-		this.filter=this.filter.bind(this)
+		this.filterByName=this.filterByName.bind(this)
 		this.toggle=this.toggle.bind(this)
+		this.inputForTags=this.inputForTags.bind(this)
   }
 
 	arrAvg(arr){
@@ -24,19 +25,44 @@ class FormatStudents extends Component {
 	toggle(id) {
 		const students = this.state.students.map((student) => {
 			if (student.id === id) {
+				///////////////////////////////////////////////////////////////////////
+				student.tags=0?student.tags=[]:student.tags;
+				///////////////////////////////////////////////////////////////////////
 				student.opened = student.opened ? false : true;
 			}
-			console.log(student)
+			// console.log(student)
 			return student
 		})
 
 		this.setState({
-			students
+			students, idToAddTagTo:id
 		});
 	}
 
+///////////////////////////////////////////////////////////////////////
+	inputForTags = (e) => {
+		const val = e.target.value;
+		const students=this.state.students.map((student)=>{
+			if(student.id ===this.state.idToAddTagTo){
+				console.log("right student")
 
-	filter=(e)=>{
+				///then we can the tags to it
+				student.tags=student.tags=[val]
+			}
+			console.log(student)
+			return student
+		})
+///////////////////////////////////////////////////////////////////////
+		if (e.key === 'Enter' && val) {
+			console.log("hit enter for " + val)
+			this.setState({
+				students
+			});
+		}
+	}
+
+
+	filterByName=(e)=>{
 		let srcStr= e.target.value.toLowerCase()
 		let arr =[];
 		for(let x of this.state.students){
@@ -53,17 +79,13 @@ class FormatStudents extends Component {
 	}
 
   componentDidMount() {
-		// console.log("herere",this.state.filteredStudents.length)
 		const url = 'https://www.hatchways.io/api/assessment/students';
-	fetch(url).then((resp) => resp.json()) // Transform the data into json
-	.then((data)=> {
-		// const updatedStudents = data.students.map((student) => {
-		// 	student.opened = false;
-		// })
-		this.setState({
-			students:data.students
+		fetch(url).then((resp) => resp.json()) // Transform the data into json
+		.then((data)=> {
+			this.setState({
+				students:data.students
+			})
 		})
-	})
   }
 
   render() {
@@ -73,11 +95,14 @@ class FormatStudents extends Component {
 
     return (
 		<div>
-			<input type="text" id="filter" onChange={this.filter}></input>
+			<input type="text" id="filter" 
+			className='filterNamesInput'
+			placeholder="Search by name" 
+			onChange={this.filterByName}>
+			</input>
 
 			{	studentObj.map((student) => {
-				// student.opened = false;
-				// console.log(student)
+
 				return (
 						<div className='container' id={student.id}>
 							<div className='img-container'>
@@ -86,18 +111,20 @@ class FormatStudents extends Component {
 
 							<div className='info-container'>
 								<h1>{student.firstName.toUpperCase() + " " + student.lastName.toUpperCase()}</h1>
-								<p>Email:{" "+ student.email} </p>
-								<p>Company:{" "+ student.company}</p>
-								<p>Skill:{" " + student.skill}</p>
-								<p>Average:{this.arrAvg(student.grades)}</p>
+								<div className='personalInfo'>
+									<p>Email:{" "+ student.email} </p>
+									<p>Company:{" "+ student.company}</p>
+									<p>Skill:{" " + student.skill}</p>
+									<p>Average:{this.arrAvg(student.grades)}</p>
+								</div>
 							</div>
 							<button type="button" className="collapsible" onClick={()=>this.toggle(student.id)}>
 							{/* change the icon on the buttom */}
-								{student.opened ?<FontAwesomeIcon icon={faMinus}/>:<FontAwesomeIcon icon={faPlus} />}
+								{student.opened ?
+								<FontAwesomeIcon size="2x" className='icons' icon={faMinus}/>:
+								<FontAwesomeIcon size="2x" className='icons'icon={faPlus} />}
 							</button>
 							<div className={"collapsible-scores" + (student.opened ? ' in' : '')}>
-							{/* <div className="collapsible-scores"> */}
-								{/* {grades} */}
 								<p>Test 1: {student.grades[0]}%</p>
 								<p>Test 2: {student.grades[1]}%</p>
 								<p>Test 3: {student.grades[2]}%</p>
@@ -106,6 +133,12 @@ class FormatStudents extends Component {
 								<p>Test 6: {student.grades[5]}%</p>
 								<p>Test 7: {student.grades[6]}%</p>
 								<p>Test 8: {student.grades[7]}%</p>
+							
+								<input type='text'
+								className='tagInput' 
+								placeholder="Add a tag"
+								onKeyDown={this.inputForTags}>
+								</input>
 							</div>
 						</div>
 				)
