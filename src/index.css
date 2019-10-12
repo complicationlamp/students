@@ -16,16 +16,31 @@ body{
 }
 .container{
   clear: both;
-  border-bottom: 1px solid lightgray;
+  /* border-bottom: 1px solid lightgray; */
 }
 .img-container{
-  width: 25%;
+  width: 20%;
   float: left;
   padding: .5em;
 }
 .info-container{
-  width: 75%;
+  width: 70%;
   float: left;
+}
+.collapsible-scores{
+  /* display: none;
+  padding: 0 18px; */
+  /* width: 100%; */
+  /* display: none; */
+  /* overflow: hidden; */
+  /* background-color: #f1f1f1; */
+    display: none
+}
+.collapsible-scores.in {
+  display: block
+}
+.collapsible{
+  width: 10%
 }
 
 
