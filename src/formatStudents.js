@@ -25,9 +25,6 @@ class FormatStudents extends Component {
 	toggle(id) {
 		const students = this.state.students.map((student) => {
 			if (student.id === id) {
-				///////////////////////////////////////////////////////////////////////
-				student.tags=0?student.tags=[]:student.tags;
-				///////////////////////////////////////////////////////////////////////
 				student.opened = student.opened ? false : true;
 			}
 			// console.log(student)
@@ -42,18 +39,18 @@ class FormatStudents extends Component {
 ///////////////////////////////////////////////////////////////////////
 	inputForTags = (e) => {
 		const val = e.target.value;
-		const students=this.state.students.map((student)=>{
-			if(student.id ===this.state.idToAddTagTo){
-				console.log("right student")
-
-				///then we can the tags to it
-				student.tags=student.tags=[val]
-			}
-			console.log(student)
-			return student
-		})
-///////////////////////////////////////////////////////////////////////
+		console.log(e)
 		if (e.key === 'Enter' && val) {
+			const students=this.state.students.map((student)=>{
+				if(student.id ===this.state.idToAddTagTo){
+					console.log("right student")
+					///then we can the tags to it
+					student.tags.push(val)
+				}
+				
+				console.log(student)
+				return student
+			})
 			console.log("hit enter for " + val)
 			this.setState({
 				students
@@ -82,6 +79,9 @@ class FormatStudents extends Component {
 		const url = 'https://www.hatchways.io/api/assessment/students';
 		fetch(url).then((resp) => resp.json()) // Transform the data into json
 		.then((data)=> {
+			data.students.map((student)=>{
+				student.tags=[]
+			})
 			this.setState({
 				students:data.students
 			})
@@ -134,6 +134,10 @@ class FormatStudents extends Component {
 								<p>Test 7: {student.grades[6]}%</p>
 								<p>Test 8: {student.grades[7]}%</p>
 							
+								{student.tags.map((tag)=>{
+									return <li>{tag}</li>
+										
+								})}
 								<input type='text'
 								className='tagInput' 
 								placeholder="Add a tag"
