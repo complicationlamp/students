@@ -9,25 +9,29 @@ class FormatStudents extends Component {
     this.state = {
 			students: [],
 			filteredStudents:[],
+			filteredByTags:[],
 			idToAddTagTo:0,
 		}
-		this.filterByName=this.filterByName.bind(this)
 		this.toggle=this.toggle.bind(this)
+		this.filterByName=this.filterByName.bind(this)
 		this.inputForTags=this.inputForTags.bind(this)
   }
 
+	//simple function to take the average of the test scores
 	arrAvg(arr){
 			let sum =0;
+			//used parseInt to make it a Number
 			for(let i of arr){sum +=parseInt(i)};
 			return sum/arr.length;
 		}
 
+	//function to open/expand the div to show all the test scores 
 	toggle(id) {
 		const students = this.state.students.map((student) => {
 			if (student.id === id) {
+				// we are going to add the opened property to the student object
 				student.opened = student.opened ? false : true;
 			}
-			// console.log(student)
 			return student
 		})
 
@@ -36,50 +40,63 @@ class FormatStudents extends Component {
 		});
 	}
 
-///////////////////////////////////////////////////////////////////////
 	inputForTags = (e) => {
 		const val = e.target.value;
-		console.log(e)
+		//listen fo the enter key, else it'll fire on every keystroke, also making sure there is a value
 		if (e.key === 'Enter' && val) {
 			const students=this.state.students.map((student)=>{
+				//this is checking to make sure we are adding to the right student
 				if(student.id ===this.state.idToAddTagTo){
 					console.log("right student")
 					///then we can the tags to it
 					student.tags.push(val)
 				}
-				
-				console.log(student)
 				return student
 			})
-			console.log("hit enter for " + val)
 			this.setState({
 				students
 			});
 		}
 	}
 
-
 	filterByName=(e)=>{
-		let srcStr= e.target.value.toLowerCase()
 		let arr =[];
+		let srcStr= e.target.value.toLowerCase()
 		for(let x of this.state.students){
 			//can search by first or last name and is not cases sensitice 
 			if(x.firstName.toLowerCase().includes(srcStr) || x.lastName.toLowerCase().includes(srcStr)){
 				arr.push(x)
 			}
 		};
-		
 		this.setState({
 			filteredStudents:arr
 			//added a callback function to force the state to update, redux would be a better option for a production app
 		}, () => {console.log('state up to date')})
 	}
 
+	filterByTag=(e)=>{
+		let arr =[];
+		let srcStr= e.target.value
+		//this bit of logic tells us to search in filterd students if a name has already been searched
+		let filledList = this.state.filteredStudents.length!==0?this.state.filteredStudents:this.state.students
+		//itorate over to find matching cases
+		for(let x of filledList){
+			if(x.tags.includes(srcStr)){
+				arr.push(x);
+			}
+		}
+		this.setState({
+			filteredByTags:arr
+		}, () => {console.log('state up to date')})
+	}
+
   componentDidMount() {
 		const url = 'https://www.hatchways.io/api/assessment/students';
-		fetch(url).then((resp) => resp.json()) // Transform the data into json
+		fetch(url).then((resp) => resp.json())
+		 // turn response data into json
 		.then((data)=> {
 			data.students.map((student)=>{
+				// we are going to add the tags property to the student object
 				student.tags=[]
 			})
 			this.setState({
@@ -89,16 +106,24 @@ class FormatStudents extends Component {
   }
 
   render() {
-		//if no letters have been given to the input, then reder the whole list of studetns
-		let studentObj = this.state.filteredStudents.length === 0 ? this.state.students : this.state.filteredStudents;
-
+		//this code allows up to use both serches together see line 88 for other relative code
+		// if there is no serch query for tag then use the filter by name array
+		//otherwise use the tag array because it will filter the filteredtudent array or default to the student array
+		let allFilters = this.state.filteredByTags.length ===0 ? this.state.filteredStudents: this.state.filteredByTags;
+		let studentObj = allFilters.length === 0 ? this.state.students : allFilters;
 
     return (
 		<div>
-			<input type="text" id="filter" 
+			<input type="text" id="nameFilter" 
 			className='filterNamesInput'
 			placeholder="Search by name" 
 			onChange={this.filterByName}>
+			</input>
+
+			<input type="text" id="tagFilter" 
+			className='filterTagsInput'
+			placeholder="Search by tag" 
+			onChange={this.filterByTag}>
 			</input>
 
 			{	studentObj.map((student) => {
@@ -118,26 +143,25 @@ class FormatStudents extends Component {
 									<p>Average:{this.arrAvg(student.grades)}</p>
 								</div>
 							</div>
+
 							<button type="button" className="collapsible" onClick={()=>this.toggle(student.id)}>
-							{/* change the icon on the buttom */}
+							{/* change the icon on the button from + to - */}
 								{student.opened ?
 								<FontAwesomeIcon size="2x" className='icons' icon={faMinus}/>:
 								<FontAwesomeIcon size="2x" className='icons'icon={faPlus} />}
 							</button>
+
+							{/* adds 'in' to the className which will allter the CSS making the block visiable*/}
 							<div className={"collapsible-scores" + (student.opened ? ' in' : '')}>
-								<p>Test 1: {student.grades[0]}%</p>
-								<p>Test 2: {student.grades[1]}%</p>
-								<p>Test 3: {student.grades[2]}%</p>
-								<p>Test 4: {student.grades[3]}%</p>
-								<p>Test 5: {student.grades[4]}%</p>
-								<p>Test 6: {student.grades[5]}%</p>
-								<p>Test 7: {student.grades[6]}%</p>
-								<p>Test 8: {student.grades[7]}%</p>
-							
+								{/* loop through the student's grads and appended them to the container */}
+								{student.grades.map((grades, i)=>{
+									return <p>Test {i+1}: {student.grades[i]}%</p>
+								})}
+								{/* append tags to the container*/}
 								{student.tags.map((tag)=>{
 									return <li>{tag}</li>
-										
 								})}
+
 								<input type='text'
 								className='tagInput' 
 								placeholder="Add a tag"
