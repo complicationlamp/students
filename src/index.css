@@ -6,7 +6,7 @@ body{
 }
 #list{
   margin: 3em 25% 3em 25% ;
-  height: 800px;
+  height: 525px;
   border-radius: 10px;
   overflow-x: hidden;
   overflow-y: scroll;
