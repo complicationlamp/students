@@ -4,7 +4,6 @@
 body{
   background:#e0e1e2;
 }
-
 #list{
   margin: 3em 25% 3em 25% ;
   height: 800px;
@@ -28,17 +27,14 @@ body{
   background: inherit;
   border-bottom: 1.5px solid #0000007d;
   margin-left: 11em;
-  margin-top: 1em;
 }
 ::placeholder {
   color:lightgray;
   font-size: large;
 }
-
 input,button {
   outline:none;
  }
-
 button{
   padding: 0;
   border: none;
@@ -63,12 +59,27 @@ button{
   float: left;
   margin: 0em 0em 1em -3em;
 }
+.tagList{
+  list-style: none;
+  float: left;
+  width: 100%;
+  padding-left: 7.5em;
+  margin-top: 10px;
+}
+.individualTag{
+  background: lightgray;
+  color: gray;
+  float: left;
+  padding: .5em;
+  border-radius: 8px;
+  margin-right: .5em;
+}
 .personalInfo{
   padding-top: 3em;
 }
 .collapsible-scores{
-    display: none;
-    padding-left: 2.5em;
+  display: none;
+  padding-left: 2.5em;
 }
 .collapsible-scores.in {
   display: block

@@ -153,14 +153,21 @@ class FormatStudents extends Component {
 
 							{/* adds 'in' to the className which will allter the CSS making the block visiable*/}
 							<div className={"collapsible-scores" + (student.opened ? ' in' : '')}>
+							<div className='testScores'>
 								{/* loop through the student's grads and appended them to the container */}
 								{student.grades.map((grades, i)=>{
 									return <p>Test {i+1}: {student.grades[i]}%</p>
 								})}
-								{/* append tags to the container*/}
-								{student.tags.map((tag)=>{
-									return <li>{tag}</li>
-								})}
+								</div>
+
+								<div className='tagContainer'>
+									{/* append tags to the container*/}
+									<ul className='tagList'>
+										{student.tags.map((tag)=>{
+											return <li className="individualTag">{tag}</li>
+										})}
+									</ul>
+								</div>
 
 								<input type='text'
 								className='tagInput' 
